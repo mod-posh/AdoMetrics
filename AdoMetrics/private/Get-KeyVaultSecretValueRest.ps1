@@ -9,7 +9,7 @@ function Get-KeyVaultSecretValueRest {
 
     # Secret identifier format:
     # https://{vault-name}.vault.azure.net/secrets/{secret-name}?api-version=7.4
-    $uri = "https://$KeyVaultName.vault.azure.net/secrets/$SecretName?api-version=$ApiVersion"
+    $uri = "https://$KeyVaultName.vault.azure.net/secrets/$($SecretName)?api-version=$ApiVersion"
 
     $headers = @{
         Authorization = "Bearer $AccessToken"
