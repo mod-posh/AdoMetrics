@@ -40,7 +40,7 @@ function Get-AdoBuildsPaged {
             $qs += "continuationToken=$([Uri]::EscapeDataString($continuationToken))"
         }
 
-        $url = "$base?$($qs -join '&')"
+        $url = "$($base)?$($qs -join '&')"
 
         $resp = Invoke-WebRequest -Method Get -Uri $url -Headers $Headers -ErrorAction Stop
         $json = $resp.Content | ConvertFrom-Json
