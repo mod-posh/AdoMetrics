@@ -1,30 +1,30 @@
 function ConvertFrom-AdoRunMetadata {
 <#
 .SYNOPSIS
-Converts an Azure DevOps build number into structured metadata using definition profiles.
+Converts an Azure DevOps build number into derived metadata using a definition profile.
 
 .DESCRIPTION
-Azure DevOps build payloads do not contain certain BAT-specific fields (userId, accountId,
-embeddedBuildId GUID). Those values are embedded in buildNumber by naming conventions.
+Uses regex patterns defined in a definition profile (keyed by definitionId) to extract
+derived fields from an Azure DevOps build number.
 
-This function applies the parsing rules from the definition profile for the given definitionId.
-If no profile exists or no patterns match, it returns parsed = $false and all derived fields empty.
+The returned object contains:
+- Parsed: indicates whether any pattern matched
+- Values: hashtable of derived field values (keys defined by the profile)
 
 .PARAMETER DefinitionId
-Build definition ID (pipeline definition id).
+Build definition id.
 
 .PARAMETER BuildNumber
-The Azure DevOps build number string.
+Azure DevOps build number.
 
 .PARAMETER DefinitionProfiles
-Hashtable keyed by definitionId with profile objects as values.
+Hashtable keyed by definitionId containing definition profile objects.
 
 .OUTPUTS
-PSCustomObject representing derived metadata.
+PSCustomObject with:
+- Parsed (bool)
+- Values (hashtable)
 
-.EXAMPLE
-$defs = Get-AdoDefinitionProfiles -DefinitionsPath "./ado-metrics/definitions"
-ConvertFrom-AdoRunMetadata -DefinitionId 1111 -BuildNumber $b.buildNumber -DefinitionProfiles $defs
 #>
     [CmdletBinding()]
     param(
@@ -33,20 +33,11 @@ ConvertFrom-AdoRunMetadata -DefinitionId 1111 -BuildNumber $b.buildNumber -Defin
         [Parameter(Mandatory)][hashtable]$DefinitionProfiles
     )
 
-    $out = @{
-        parsed               = $false
-        pipelineNameFragment = $null
-        userId               = $null
-        embeddedBuildId      = $null
-        accountName          = $null
-        accountId            = $null
-        cloudProvider        = $null
-        runDateYmd           = $null
-        runRev               = $null
-    }
+    $values = @{}
+    $parsed = $false
 
     if (-not $DefinitionProfiles.ContainsKey($DefinitionId)) {
-        return [pscustomobject]$out
+        return [pscustomobject]@{ Parsed = $false; Values = $values }
     }
 
     $profile = $DefinitionProfiles[$DefinitionId]
@@ -61,13 +52,16 @@ ConvertFrom-AdoRunMetadata -DefinitionId 1111 -BuildNumber $b.buildNumber -Defin
             $srcGroup = [string]$kv.Value
 
             if ($m.Groups[$srcGroup] -and $m.Groups[$srcGroup].Success) {
-                $out[$dest] = $m.Groups[$srcGroup].Value
+                $values[$dest] = $m.Groups[$srcGroup].Value
             }
         }
 
-        $out.parsed = $true
+        $parsed = $true
         break
     }
 
-    return [pscustomobject]$out
+    return [pscustomobject]@{
+        Parsed = $parsed
+        Values = $values
+    }
 }
