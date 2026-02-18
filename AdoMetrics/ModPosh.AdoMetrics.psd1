@@ -15,7 +15,8 @@
         'Get-AdoMetricsProfile',
         'ConvertFrom-AdoRunMetadata',
         'Get-AdoPat',
-        'New-AdoAuthHeader'
+        'New-AdoAuthHeader',
+        'Update-AdoMetricsReadme'
     )
 
     PrivateData = @{
