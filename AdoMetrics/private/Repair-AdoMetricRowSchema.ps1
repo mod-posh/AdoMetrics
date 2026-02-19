@@ -1,21 +1,28 @@
-function Repair-AdoMetricRowSchema
-{
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory)][object]$Row
-    )
+function Repair-AdoMetricRowSchema {
+  [CmdletBinding()]
+  param([Parameter(Mandatory)][object] $Row)
 
-    # Ensure derivedParsed exists
-    if (-not $Row.PSObject.Properties.Match('derivedParsed'))
-    {
-        $Row | Add-Member -NotePropertyName derivedParsed -NotePropertyValue $false
-    }
+  # helper to add only if missing
+function Ensure([string]$Name, $Value) {
+  if ($null -eq $Row.PSObject.Properties[$Name]) {
+    $Row | Add-Member -NotePropertyName $Name -NotePropertyValue $Value -Force
+  }
+}
 
-    # Ensure derived exists
-    if (-not $Row.PSObject.Properties.Match('derived'))
-    {
-        $Row | Add-Member -NotePropertyName derived -NotePropertyValue ([pscustomobject]@{})
-    }
+  # Required by milestone
+  Ensure -Name 'derivedParsed' -Value $false
+  Ensure -Name 'derived'       -Value @{}
 
-    return $Row
+  # V1 merge key support (do NOT overwrite; only backfill from legacy names)
+  if (-not $Row.PSObject.Properties.Match('definitionId')) {
+    $legacy = $Row.PSObject.Properties['DefinitionId']
+    if ($legacy) { Ensure -Name 'definitionId' -Value [int]$legacy.Value }
+  }
+
+  if (-not $Row.PSObject.Properties.Match('adoBuildId')) {
+    $legacy = $Row.PSObject.Properties['AdoBuildId']
+    if ($legacy) { Ensure -Name 'adoBuildId' -Value [int]$legacy.Value }
+  }
+
+  return $Row
 }
