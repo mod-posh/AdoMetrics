@@ -10,13 +10,24 @@
 
     FunctionsToExport = @(
         'Resolve-AdoMetricsConfig',
+
         'Get-AdoProjectProfile',
-        'Get-AdoDefinitionProfiles',
+        'Get-AdoDefinitionProfile',
         'Get-AdoMetricsProfile',
+
         'ConvertFrom-AdoRunMetadata',
+        'ConvertTo-AdoMetricRow',
+
         'Get-AdoPat',
         'New-AdoAuthHeader',
-        'Update-AdoMetricsReadme'
+
+        'Get-AdoBuildRun',
+
+        'Import-AdoMetricsJsonl',
+        'Export-AdoMetricsJsonl',
+        'Merge-AdoMetricRow',
+
+        'New-AdoMetricsReadme'
     )
 
     PrivateData = @{
