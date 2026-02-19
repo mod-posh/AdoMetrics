@@ -1,20 +1,20 @@
-function Import-AdoMetricsJsonl
-{
-    <#
-.SYNOPSIS
-Reads metric rows from a JSONL file.
+function Import-AdoMetricsJsonl {
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory)]
+    [string] $Path
+  )
 
-.DESCRIPTION
-Reads JSONL (one JSON object per line). If the file does not exist, returns an empty array.
+  if (-not (Test-Path $Path)) {
+    return @()
+  }
 
-.PARAMETER Path
-Input JSONL path.
+  $items = @(Read-JsonlFile -Path $Path)
 
-#>
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory)][string]$Path
-    )
+  # If Read-JsonlFile returned a single array as one item, flatten it
+  if ($items.Count -eq 1 -and $items[0] -is [System.Array]) {
+    return @($items[0])
+  }
 
-    return @(Read-JsonlFile -Path $Path | ForEach-Object { Repair-AdoMetricRowSchema -Row $_ })
+  return @($items)
 }
