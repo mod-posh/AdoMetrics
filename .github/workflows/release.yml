@@ -1,0 +1,117 @@
+name: New Release
+
+on:
+  milestone:
+    types: [closed]
+  workflow_dispatch:
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Get Project Version
+        id: get_version
+        uses: mod-posh/GetProjectVersion@main
+        with:
+          Filename: 'ModPosh.AdoMetrics'
+          verbose: "verbose"
+
+      - name: Create Release Notes
+        uses: mod-posh/Issue2ReleaseNotes@v0.0.3.3
+        with:
+          milestone_number: ${{ github.event.milestone.number }}
+          verbose: 'verbose'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull Latest Changes
+        run: git pull origin ${{ github.ref_name }}
+        shell: bash
+
+      - name: Create Release
+        uses: mod-posh/NewTaggedRelease@v0.0.3.2
+        with:
+          name: 'Release v${{ steps.get_version.outputs.version }}'
+          filename: 'RELEASE.md'
+          version: ${{ steps.get_version.outputs.version }}
+          verbose: 'verbose'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install PowerShell
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y powershell
+
+      - name: Update README using custom action
+        uses: mod-posh/UpdateReadme@main
+        with:
+          project_name: "ModPosh.AdoMetrics"
+          verbose: 'verbose'
+
+      - name: Create PowerShell Manifest
+        uses: mod-posh/CreatePowerShellManifest@main
+        with:
+          ModuleName: "ModPosh.AdoMetrics"
+          Imports: "public"
+
+      - name: Create PowerShell Module
+        uses: mod-posh/CreatePowerShellModule@main
+        with:
+          ModuleName: "ModPosh.AdoMetrics"
+          Imports: "public,private"
+
+      - name: Install PlatyPS
+        run: |
+          pwsh -Command "
+          if (-not (Get-Module -ListAvailable -Name PlatyPS)) {
+            Install-Module -Name PlatyPS -Force -AllowClobber
+          }
+          "
+
+      - name: Generate Documentation with PlatyPS
+        run: |
+          pwsh -Command "
+          # Import the created module
+          Import-Module './publish/ModPosh.AdoMetrics' -Force
+
+          # Generate markdown help using PlatyPS
+          Import-Module PlatyPS
+          New-MarkdownHelp -Module ModPosh.AdoMetrics -AlphabeticParamsOrder -UseFullTypeName -WithModulePage -OutputFolder './docs' -ErrorAction SilentlyContinue -Force
+          Update-MarkdownHelp -Path './docs' -AlphabeticParamsOrder -UseFullTypeName
+
+          # Create external help file
+          New-ExternalHelp -Path './docs' -OutputPath './publish/ModPosh.AdoMetrics' -Force
+
+          Write-Host 'PlatyPS documentation generated successfully'
+          "
+
+      - name: Run markdownlint-cli2-action
+        uses: DavidAnson/markdownlint-cli2-action@v22
+        with:
+          globs: 'docs/*.md'
+          fix: true
+
+      - name: Commit Documentation Changes
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Check if there are any changes to commit
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Changes detected, committing..."
+
+            # Stage all changes (documentation and any markdownlint fixes)
+            git add .
+
+            # Commit the changes
+            git commit -m "Update documentation and fix markdown formatting for release v${{ steps.get_version.outputs.version }}"
+
+            # Pull any remote changes and push
+            git pull --rebase origin ${{ github.ref_name }} || true
+            git push origin ${{ github.ref_name }}
+          else
+            echo "No changes to commit"
+          fi
+        if: success()
