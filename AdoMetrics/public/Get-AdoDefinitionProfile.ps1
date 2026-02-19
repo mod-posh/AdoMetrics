@@ -1,4 +1,4 @@
-function Get-AdoDefinitionProfiles {
+function Get-AdoDefinitionProfile {
 <#
 .SYNOPSIS
 Loads ADO run parsing profiles keyed by definitionId.
@@ -22,7 +22,7 @@ Folder containing definition profile JSON files.
 Hashtable keyed by [int] definitionId with profile objects as values.
 
 .EXAMPLE
-$defs = Get-AdoDefinitionProfiles -DefinitionsPath "./ado-metrics/definitions"
+$defs = Get-AdoDefinitionProfile -DefinitionsPath "./ado-metrics/definitions"
 $defs[1111].pipelineLabel
 #>
     [CmdletBinding()]
