@@ -1,21 +1,19 @@
-function Export-AdoMetricsJsonl
-{
-    <#
-.SYNOPSIS
-Writes metric rows to a JSONL file.
+function Export-AdoMetricsJsonl {
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory)][string] $Path,
+    [Parameter()][object[]] $Rows = @()
+  )
 
-.PARAMETER Path
-Output file path.
+  $Rows = @($Rows)
 
-.PARAMETER Rows
-Objects to write as JSONL.
+  $dir = Split-Path -Parent $Path
+  if ($dir -and -not (Test-Path $dir)) {
+    New-Item -ItemType Directory -Path $dir -Force | Out-Null
+  }
 
-#>
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory)][string]$Path,
-        [Parameter(Mandatory)][object[]]$Rows
-    )
-
-    Write-Jsonl -Path $Path -Items $Rows
+  # Overwrite file with rows only (no leading blank line)
+  $Rows | ForEach-Object {
+    $_ | ConvertTo-Json -Depth 50 -Compress
+  } | Set-Content -Path $Path -Encoding UTF8
 }
