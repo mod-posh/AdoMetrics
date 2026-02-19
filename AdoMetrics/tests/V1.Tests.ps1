@@ -3,13 +3,7 @@ $ErrorActionPreference = 'Stop'
 
 BeforeAll {
   Import-Module "$PSScriptRoot/../ModPosh.AdoMetrics.psd1" -Force
-  Remove-Item function:\Repair-AdoMetricRowSchema -ErrorAction SilentlyContinue
-  . (Join-Path $PSScriptRoot '..\Private\Repair-AdoMetricRowSchema.ps1')
-
-(Get-Command Repair-AdoMetricRowSchema).Source
-(Get-Command Repair-AdoMetricRowSchema).ScriptBlock.ToString()
-
- }
+}
 
 Describe "AdoMetrics V1" {
 
@@ -37,17 +31,18 @@ Describe "AdoMetrics V1" {
     $r2 = [pscustomobject]@{ definitionId = 1; adoBuildId = 10 }
 
     $merged = Merge-AdoMetricRow -Store @($r1) -Incoming @($r2)
-
     $merged.Count | Should -Be 1
   }
 
- It "Schema repair is idempotent" {
-   $row = [pscustomobject]@{ definitionId = 1; adoBuildId = 100 }
+  It "Schema repair is idempotent" {
+    InModuleScope ModPosh.AdoMetrics {
+      $row = [pscustomobject]@{ definitionId = 1; adoBuildId = 100 }
 
-   $r1 = Repair-AdoMetricRowSchema -Row $row
-   $r2 = Repair-AdoMetricRowSchema -Row $r1
+      $r1 = Repair-AdoMetricRowSchema -Row $row
+      $r2 = Repair-AdoMetricRowSchema -Row $r1
 
-   $r2.PSObject.Properties.Name | Should -Contain 'derivedParsed'
-   $r2.PSObject.Properties.Name | Should -Contain 'derived'
- }
+      $r2.PSObject.Properties.Name | Should -Contain 'derivedParsed'
+      $r2.PSObject.Properties.Name | Should -Contain 'derived'
+    }
+  }
 }

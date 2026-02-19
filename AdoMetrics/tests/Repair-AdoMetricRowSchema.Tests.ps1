@@ -1,26 +1,34 @@
-Describe "Repair-AdoMetricRowSchema" {
-  BeforeAll {
-   Import-Module "$PSScriptRoot/../ModPosh.AdoMetrics.psd1" -Force
-   . (Join-Path $PSScriptRoot '..\Private\Repair-AdoMetricRowSchema.ps1')
-  }
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
 
-  It "is idempotent and does not overwrite existing members" {
-    $row = [pscustomobject]@{
-      derivedParsed = $true
-      derived = @{ a = 1 }
+# IMPORTANT: load at discovery time so InModuleScope can resolve the module
+Import-Module "$PSScriptRoot/../ModPosh.AdoMetrics.psd1" -Force
+
+Describe "Repair-AdoMetricRowSchema" {
+
+  InModuleScope ModPosh.AdoMetrics {
+
+    It "is idempotent and does not overwrite existing members" {
+      $row = [pscustomobject]@{
+        derivedParsed = $true
+        derived       = @{ a = 1 }
+      }
+
+      { Repair-AdoMetricRowSchema -Row $row | Out-Null } | Should -Not -Throw
+      { Repair-AdoMetricRowSchema -Row $row | Out-Null } | Should -Not -Throw
+
+      $row.derivedParsed | Should -BeTrue
+      $row.derived.a | Should -Be 1
     }
 
-    { Repair-AdoMetricRowSchema -Row $row | Out-Null } | Should -Not -Throw
-    { Repair-AdoMetricRowSchema -Row $row | Out-Null } | Should -Not -Throw
+    It "adds missing fields without throwing" {
+      $row = [pscustomobject]@{ definitionId = 1; adoBuildId = 2 }
 
-    $row.derivedParsed | Should -BeTrue
-    $row.derived.a | Should -Be 1
-  }
+      $fixed = Repair-AdoMetricRowSchema -Row $row
 
-  It "adds missing fields without throwing" {
-    $row = [pscustomobject]@{ definitionId=1; adoBuildId=2 }
-    $fixed = Repair-AdoMetricRowSchema -Row $row
-    $fixed.derivedParsed | Should -BeFalse
-    $fixed.derived.Keys.Count | Should -Be 0
+      $fixed.derivedParsed | Should -BeFalse
+      $fixed.derived.Keys.Count | Should -Be 0
+    }
+
   }
 }
