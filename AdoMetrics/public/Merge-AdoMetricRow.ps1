@@ -21,13 +21,13 @@ Merged rows, newest-first.
     $index = @{}
 
     foreach ($e in @($Existing)) {
-        $e = Repair-AdoMetricRow -Row $e
+        $e = Repair-AdoMetricRowSchema -Row $e
         $k = "{0}:{1}" -f $e.definitionId, $e.adoBuildId
         $index[$k] = $e
     }
 
     foreach ($n in @($New)) {
-        $n = Repair-AdoMetricRow -Row $n
+        $n = Repair-AdoMetricRowSchema -Row $n
         $k = "{0}:{1}" -f $n.definitionId, $n.adoBuildId
         $index[$k] = $n
     }
