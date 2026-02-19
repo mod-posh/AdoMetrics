@@ -78,19 +78,19 @@ jobs:
 
           # Generate markdown help using PlatyPS
           Import-Module PlatyPS
-          New-MarkdownHelp -Module ModPosh.AdoMetrics -AlphabeticParamsOrder -UseFullTypeName -WithModulePage -OutputFolder './docs' -ErrorAction SilentlyContinue -Force
-          Update-MarkdownHelp -Path './docs' -AlphabeticParamsOrder -UseFullTypeName
+          New-MarkdownHelp -Module ModPosh.AdoMetrics -AlphabeticParamsOrder -UseFullTypeName -WithModulePage -OutputFolder 'docs/api' -ErrorAction SilentlyContinue -Force
+          Update-MarkdownHelp -Path 'docs/api' -AlphabeticParamsOrder -UseFullTypeName
 
           # Create external help file
-          New-ExternalHelp -Path './docs' -OutputPath './publish/ModPosh.AdoMetrics' -Force
-
+          New-ExternalHelp -Path 'docs/api' -OutputPath './publish/ModPosh.AdoMetrics' -Force
+          
           Write-Host 'PlatyPS documentation generated successfully'
           "
 
       - name: Run markdownlint-cli2-action
         uses: DavidAnson/markdownlint-cli2-action@v22
         with:
-          globs: 'docs/*.md'
+          globs: 'docs/api/*.md'
           fix: true
 
       - name: Commit Documentation Changes
