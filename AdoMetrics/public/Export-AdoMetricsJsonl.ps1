@@ -79,7 +79,8 @@ function Export-AdoMetricsJsonl
   param(
     [Parameter(Mandatory)][string] $Path,
     [Parameter()][object[]] $Rows = @(),
-    [Parameter()][bool] $Repair = $true
+    [Parameter()][bool] $Repair = $true,
+    [Parameter()][bool] $Validate = $true
   )
 
   $Rows = @($Rows)
@@ -100,6 +101,12 @@ function Export-AdoMetricsJsonl
         Repair-AdoMetricRowSchema -Row $r
       }
     )
+  }
+
+  if ($Validate) {
+    for ($i = 0; $i -lt $toWrite.Count; $i++) {
+      Assert-AdoMetricsRow -Row $toWrite[$i] -Index $i | Out-Null
+    }
   }
 
   # Overwrite file with rows only (no leading blank line)
