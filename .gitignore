@@ -402,3 +402,4 @@ ado-metrics/definitions/1111.profile.json
 ado-metrics/definitions/1112.profile.json
 ado-metrics/definitions/1113.profile.json
 Scripts/local-smoke.ps1
+Scripts/test-windows.ps1
