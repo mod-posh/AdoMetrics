@@ -92,14 +92,6 @@ Add `/scripts/quickstart-v1.ps1` that demonstrates:
   * Merge dedupes by definitionId+adoBuildId
   * Schema repair is idempotent (doesn’t throw on already-repaired rows)
 
-## ENHANCEMENT, CREATE, ADR-001
-
-* issue-15: Add private `Assert-AdoMetricRow` for boundary validation
-
-## DELETE, ADR-001
-
-* issue-1: Delete (or move out of module entirely)
-
 ## ENHANCEMENT, ADR-001
 
 * issue-18: Enforce schemaVersion contract in V1 (warn-if-missing, throw-if-newer)
@@ -107,6 +99,10 @@ Add `/scripts/quickstart-v1.ps1` that demonstrates:
 * issue-14: Apply schema repair at merge boundary (store + incoming)
 * issue-13: Apply schema repair during JSONL import
 * issue-12: Normalize merge keys in Merge-AdoMetricRow
+
+## DELETE, ADR-001
+
+* issue-1: Delete (or move out of module entirely)
 
 ## CREATE, ADR-001
 
@@ -123,4 +119,8 @@ Add `/scripts/quickstart-v1.ps1` that demonstrates:
 * issue-4: Modify public\Import-AdoMetricsJsonl.ps1
 * issue-3: Modify private\Repair-AdoMetricRowSchema.ps1
 * issue-2: Modify public\ConvertTo-AdoMetricRow.ps1
+
+## ENHANCEMENT, CREATE, ADR-001
+
+* issue-15: Add private `Assert-AdoMetricRow` for boundary validation
 
