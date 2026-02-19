@@ -1,39 +1,29 @@
-function Merge-AdoMetricRow
-{
-    <#
-.SYNOPSIS
-Merges two sets of metric rows, deduping by definitionId + adoBuildId.
+function Merge-AdoMetricRow {
+  [CmdletBinding()]
+  param(
+    [Parameter()] [object[]] $Store    = @(),
+    [Parameter()] [object[]] $Incoming = @()
+  )
 
-.PARAMETER Existing
-Existing rows.
+  $Store    = @($Store)    # normalize $null -> @()
+  $Incoming = @($Incoming)
 
-.PARAMETER New
-New rows.
+  $all = New-Object System.Collections.Generic.List[object]
 
-.OUTPUTS
-Merged rows, newest-first.
-#>
-    [CmdletBinding()]
-    param(
-        [Parameter()][object[]]$Existing = @(),
-        [Parameter()][object[]]$New = @()
-    )
+  foreach ($r in $Store)    { $all.Add((Repair-AdoMetricRowSchema -Row $r)) }
+  foreach ($r in $Incoming) { $all.Add((Repair-AdoMetricRowSchema -Row $r)) }
 
-    $index = @{}
+  $byKey = @{}
 
-    foreach ($e in @($Existing))
-    {
-        $e = Repair-AdoMetricRowSchema -Row $e
-        $k = "{0}:{1}" -f $e.definitionId, $e.adoBuildId
-        $index[$k] = $e
-    }
+  foreach ($r in $all) {
+    $defProp   = $r.PSObject.Properties['definitionId']
+    $buildProp = $r.PSObject.Properties['adoBuildId']
 
-    foreach ($n in @($New))
-    {
-        $n = Repair-AdoMetricRowSchema -Row $n
-        $k = "{0}:{1}" -f $n.definitionId, $n.adoBuildId
-        $index[$k] = $n
-    }
+    if (-not $defProp -or -not $buildProp) { continue }
 
-    return @($index.Values | Sort-Object { $_.queueTimeUtc } -Descending)
+    $key = "{0}|{1}" -f $defProp.Value, $buildProp.Value
+    $byKey[$key] = $r
+  }
+
+  return @($byKey.Values)
 }
