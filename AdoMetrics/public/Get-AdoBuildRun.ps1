@@ -1,65 +1,48 @@
-function Get-AdoBuildRun
-{
-    <#
-.SYNOPSIS
-Fetches Azure DevOps build runs for one or more definition IDs.
+function Get-AdoBuildRun {
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory)] [string] $Organization,
+    [Parameter(Mandatory)] [string] $Project,
+    [Parameter(Mandatory)] [int] $DefinitionId,
+    [Parameter(Mandatory)] [datetime] $MinTimeUtc,
+    [Parameter(Mandatory)] [hashtable] $Headers
+  )
 
-.DESCRIPTION
-Calls the ADO Builds List REST API and handles continuation token paging.
-Returns the raw build objects (as returned by ADO).
+  $min = $MinTimeUtc.ToUniversalTime().ToString("o")
+  $uri = "https://dev.azure.com/$Organization/$Project/_apis/build/builds?definitions=$DefinitionId&minTime=$min&`$top=100&queryOrder=finishTimeDescending&api-version=7.1"
 
-.PARAMETER Organization
-ADO organization (e.g. rseng)
+  # Make sure we always request JSON
+  $reqHeaders = @{}
+  foreach ($k in $Headers.Keys) { $reqHeaders[$k] = $Headers[$k] }
+  if (-not $reqHeaders.ContainsKey('Accept')) { $reqHeaders['Accept'] = 'application/json' }
 
-.PARAMETER Project
-ADO project (e.g. GlobalBuildAutomation)
+  try {
+    # IMPORTANT: assign to $null first so the response object never hits the pipeline
+    $resp = $null
+    $resp = Invoke-WebRequest -Method Get -Uri $uri -Headers $reqHeaders -ErrorAction Stop
 
-.PARAMETER DefinitionIds
-One or more pipeline definition IDs.
+    $body = $resp.Content
+    $trim = if ($null -ne $body) { $body.TrimStart() } else { "" }
 
-.PARAMETER Headers
-Authorization headers (use New-AdoAuthHeader).
-
-.PARAMETER MinTimeUtc
-Optional minimum time (UTC). Only runs after this time are returned.
-
-.OUTPUTS
-Array of raw ADO build objects.
-
-#>
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory)][string]$Organization,
-        [Parameter(Mandatory)][string]$Project,
-        [Parameter(Mandatory)][int[]]$DefinitionId,
-        [Parameter(Mandatory)][hashtable]$Headers,
-        [Parameter()][datetime]$MinTimeUtc
-    )
-
-    $all = New-Object System.Collections.Generic.List[object]
-
-    foreach ($defId in $DefinitionId)
-    {
-
-        $params = @{
-            Headers      = $Headers
-            Organization = $Organization
-            Project      = $Project
-            DefinitionId = $defId
-        }
-
-        if ($PSBoundParameters.ContainsKey('MinTimeUtc'))
-        {
-            $params['MinTimeUtc'] = $MinTimeUtc
-        }
-
-        $runs = Get-AdoBuildsPaged @params
-
-        foreach ($r in $runs)
-        {
-            $all.Add($r)
-        }
+    if (-not ($trim.StartsWith('{') -or $trim.StartsWith('['))) {
+      $snippet = if ($body) { $body.Substring(0, [Math]::Min(200, $body.Length)) } else { "<empty>" }
+      throw "ADO returned non-JSON content. Status=$($resp.StatusCode). ContentType=$($resp.Headers['Content-Type']). Snippet=$snippet"
     }
 
-    return , $all.ToArray()
+    $json = $body | ConvertFrom-Json -Depth 50
+
+    if ($null -ne $json -and ($json.PSObject.Properties.Name -contains 'value')) {
+      return ,@($json.value)
+    }
+
+    if ($json -is [System.Array]) {
+      return ,@($json)
+    }
+
+    $props = if ($null -ne $json) { ($json.PSObject.Properties.Name -join ', ') } else { '<null>' }
+    throw "Unexpected JSON shape from ADO. Missing 'value'. JsonProperties=[$props]"
+  }
+  catch {
+    throw "Get-AdoBuildRun failed. Uri=$uri. $($_.Exception.Message)"
+  }
 }
