@@ -4,11 +4,13 @@ function Repair-AdoMetricRowSchema {
         [Parameter(Mandatory)][object]$Row
     )
 
-    if ($null -eq $Row.PSObject.Properties["derivedParsed"]) {
+    # Ensure derivedParsed exists
+    if (-not $Row.PSObject.Properties.Match('derivedParsed')) {
         $Row | Add-Member -NotePropertyName derivedParsed -NotePropertyValue $false
     }
 
-    if ($null -eq $Row.PSObject.Properties["derived"]) {
+    # Ensure derived exists
+    if (-not $Row.PSObject.Properties.Match('derived')) {
         $Row | Add-Member -NotePropertyName derived -NotePropertyValue ([pscustomobject]@{})
     }
 
