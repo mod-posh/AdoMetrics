@@ -22,7 +22,7 @@ jobs:
       - name: Create Release Notes
         uses: mod-posh/Issue2ReleaseNotes@v0.0.3.3
         with:
-          milestone_number: 1
+          milestone_number: ${{ github.event.milestone.number }}
           verbose: 'verbose'
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -55,12 +55,14 @@ jobs:
         with:
           ModuleName: "ModPosh.AdoMetrics"
           Imports: "public"
+          Debug: 'verbose'
 
       - name: Create PowerShell Module
         uses: mod-posh/CreatePowerShellModule@main
         with:
           ModuleName: "ModPosh.AdoMetrics"
           Imports: "public,private"
+          Debug: 'verbose'
 
       - name: Install PlatyPS
         run: |
