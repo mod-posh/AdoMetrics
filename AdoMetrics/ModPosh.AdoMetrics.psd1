@@ -1,6 +1,6 @@
 @{
     RootModule        = 'ModPosh.AdoMetrics.psm1'
-    ModuleVersion     = '0.1.0'
+    ModuleVersion     = '1.0.0'
     GUID              = '442c032e-4c89-487f-ad68-9f57747b03c8'
     Author            = 'Mod-Posh'
     CompanyName       = 'Mod-Posh'
@@ -9,25 +9,13 @@
     PowerShellVersion = '7.2'
 
     FunctionsToExport = @(
-        'Resolve-AdoMetricsConfig',
-
-        'Get-AdoProjectProfile',
-        'Get-AdoDefinitionProfile',
-        'Get-AdoMetricsProfile',
-
-        'ConvertFrom-AdoRunMetadata',
-        'ConvertTo-AdoMetricRow',
-
-        'Get-AdoPat',
         'New-AdoAuthHeader',
-
         'Get-AdoBuildRun',
-
+        'ConvertTo-AdoMetricRow',
         'Import-AdoMetricsJsonl',
         'Export-AdoMetricsJsonl',
         'Merge-AdoMetricRow',
-
-        'New-AdoMetricsReadme'
+        'Get-AdoPat'
     )
 
     PrivateData       = @{
