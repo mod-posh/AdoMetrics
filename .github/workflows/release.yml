@@ -35,7 +35,7 @@ jobs:
         with:
           name: 'Release v${{ steps.get_version.outputs.version }}'
           filename: 'RELEASE.md'
-          version: ${{ steps.get_version.outputs.version }}
+          version: ${{ env.VERSION }}
           verbose: 'verbose'
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
