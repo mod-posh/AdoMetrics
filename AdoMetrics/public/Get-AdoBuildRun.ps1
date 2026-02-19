@@ -30,18 +30,31 @@ Array of raw ADO build objects.
     param(
         [Parameter(Mandatory)][string]$Organization,
         [Parameter(Mandatory)][string]$Project,
-        [Parameter(Mandatory)][int[]]$DefinitionIds,
+        [Parameter(Mandatory)][int[]]$DefinitionId,
         [Parameter(Mandatory)][hashtable]$Headers,
         [Parameter()][datetime]$MinTimeUtc
     )
 
     $all = New-Object System.Collections.Generic.List[object]
 
-    foreach ($defId in $DefinitionIds) {
-        $runs = Get-AdoBuildsPaged -Headers $Headers -Organization $Organization -Project $Project -DefinitionId $defId @(
-            if ($PSBoundParameters.ContainsKey('MinTimeUtc')) { @{ MinTimeUtc = $MinTimeUtc } }
-        )
-        foreach ($r in $runs) { $all.Add($r) }
+    foreach ($defId in $DefinitionId) {
+
+        $params = @{
+            Headers      = $Headers
+            Organization = $Organization
+            Project      = $Project
+            DefinitionId = $defId
+        }
+
+        if ($PSBoundParameters.ContainsKey('MinTimeUtc')) {
+            $params['MinTimeUtc'] = $MinTimeUtc
+        }
+
+        $runs = Get-AdoBuildsPaged @params
+
+        foreach ($r in $runs) {
+            $all.Add($r)
+        }
     }
 
     return ,$all.ToArray()
