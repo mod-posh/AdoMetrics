@@ -30,9 +30,9 @@
         'New-AdoMetricsReadme'
     )
 
-    PrivateData = @{
+    PrivateData       = @{
         PSData = @{
-            Tags       = @('AzureDevOps','Metrics','JSONL','Markdown','Automation','PlatyPS')
+            Tags       = @('AzureDevOps', 'Metrics', 'JSONL', 'Markdown', 'Automation', 'PlatyPS')
             ProjectUri = 'https://github.com/mod-posh/adometrics'
             LicenseUri = 'https://github.com/mod-posh/adometrics/blob/main/LICENSE'
         }

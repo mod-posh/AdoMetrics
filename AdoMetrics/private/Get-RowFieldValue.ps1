@@ -1,4 +1,5 @@
-function Get-RowFieldValue {
+function Get-RowFieldValue
+{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][object]$Row,
@@ -13,11 +14,13 @@ function Get-RowFieldValue {
 
     $current = $Row
 
-    foreach ($p in $parts) {
+    foreach ($p in $parts)
+    {
         if ($null -eq $current) { return $null }
 
         # Support both PSCustomObject properties and hashtables/dictionaries
-        if ($current -is [System.Collections.IDictionary]) {
+        if ($current -is [System.Collections.IDictionary])
+        {
             if ($current.Contains($p)) { $current = $current[$p] }
             else { return $null }
             continue

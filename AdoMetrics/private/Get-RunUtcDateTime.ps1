@@ -1,4 +1,5 @@
-function Get-RunUtcDateTime {
+function Get-RunUtcDateTime
+{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][object]$Value
@@ -6,10 +7,12 @@ function Get-RunUtcDateTime {
 
     if ($null -eq $Value) { return $null }
 
-    try {
+    try
+    {
         return ([datetime]$Value).ToUniversalTime()
     }
-    catch {
+    catch
+    {
         return $null
     }
 }

@@ -1,5 +1,6 @@
-function Get-AdoBuildRun {
-<#
+function Get-AdoBuildRun
+{
+    <#
 .SYNOPSIS
 Fetches Azure DevOps build runs for one or more definition IDs.
 
@@ -37,7 +38,8 @@ Array of raw ADO build objects.
 
     $all = New-Object System.Collections.Generic.List[object]
 
-    foreach ($defId in $DefinitionId) {
+    foreach ($defId in $DefinitionId)
+    {
 
         $params = @{
             Headers      = $Headers
@@ -46,16 +48,18 @@ Array of raw ADO build objects.
             DefinitionId = $defId
         }
 
-        if ($PSBoundParameters.ContainsKey('MinTimeUtc')) {
+        if ($PSBoundParameters.ContainsKey('MinTimeUtc'))
+        {
             $params['MinTimeUtc'] = $MinTimeUtc
         }
 
         $runs = Get-AdoBuildsPaged @params
 
-        foreach ($r in $runs) {
+        foreach ($r in $runs)
+        {
             $all.Add($r)
         }
     }
 
-    return ,$all.ToArray()
+    return , $all.ToArray()
 }

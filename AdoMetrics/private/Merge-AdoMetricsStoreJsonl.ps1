@@ -1,4 +1,5 @@
-function Merge-AdoMetricsStoreJsonl {
+function Merge-AdoMetricsStoreJsonl
+{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$AllJsonlPath,
@@ -10,12 +11,14 @@ function Merge-AdoMetricsStoreJsonl {
 
     $index = @{}
 
-    foreach ($e in $existing) {
+    foreach ($e in $existing)
+    {
         $k = "{0}:{1}" -f $e.definitionId, $e.adoBuildId
         $index[$k] = $e
     }
 
-    foreach ($n in @($NewRows)) {
+    foreach ($n in @($NewRows))
+    {
         $k = "{0}:{1}" -f $n.definitionId, $n.adoBuildId
         $index[$k] = $n
     }

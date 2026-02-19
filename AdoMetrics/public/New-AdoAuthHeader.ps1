@@ -1,5 +1,6 @@
-function New-AdoAuthHeader {
-<#
+function New-AdoAuthHeader
+{
+    <#
 .SYNOPSIS
 Creates an Azure DevOps REST API Authorization header for a PAT.
 
@@ -42,24 +43,30 @@ $headers = New-AdoAuthHeader -Pat $env:ADO_PAT_B64
     # - Already base64-encoded ":PAT" => use as-is
     $encoded = $null
 
-    if (Test-IsBase64 -Value $Pat) {
-        try {
+    if (Test-IsBase64 -Value $Pat)
+    {
+        try
+        {
             $decoded = [Text.Encoding]::ASCII.GetString([Convert]::FromBase64String($Pat))
 
-            if ($decoded.StartsWith(":") -and $decoded.Length -gt 1) {
+            if ($decoded.StartsWith(":") -and $decoded.Length -gt 1)
+            {
                 $encoded = $Pat
             }
-            else {
+            else
+            {
                 $bytes = [Text.Encoding]::ASCII.GetBytes(":$Pat")
                 $encoded = [Convert]::ToBase64String($bytes)
             }
         }
-        catch {
+        catch
+        {
             $bytes = [Text.Encoding]::ASCII.GetBytes(":$Pat")
             $encoded = [Convert]::ToBase64String($bytes)
         }
     }
-    else {
+    else
+    {
         $bytes = [Text.Encoding]::ASCII.GetBytes(":$Pat")
         $encoded = [Convert]::ToBase64String($bytes)
     }

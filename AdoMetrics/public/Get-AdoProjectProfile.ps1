@@ -1,5 +1,6 @@
-function Get-AdoProjectProfile {
-<#
+function Get-AdoProjectProfile
+{
+    <#
 .SYNOPSIS
 Loads the ADO Metrics project profile.
 

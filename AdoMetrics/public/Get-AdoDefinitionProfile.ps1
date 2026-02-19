@@ -1,5 +1,6 @@
-function Get-AdoDefinitionProfile {
-<#
+function Get-AdoDefinitionProfile
+{
+    <#
 .SYNOPSIS
 Loads ADO run parsing profiles keyed by definitionId.
 
@@ -30,14 +31,16 @@ $defs[1111].pipelineLabel
         [Parameter(Mandatory)][string]$DefinitionsPath
     )
 
-    if (-not (Test-Path $DefinitionsPath)) {
+    if (-not (Test-Path $DefinitionsPath))
+    {
         throw "Definitions profiles folder not found: $DefinitionsPath"
     }
 
     $profiles = @{}
 
     $files = Get-ChildItem -Path $DefinitionsPath -Filter '*.json' | Sort-Object Name
-    foreach ($f in $files) {
+    foreach ($f in $files)
+    {
         $p = Read-JsonFile -Path $f.FullName
         Assert-ProfileValid -Profile $p -ProfileType Definition -SourcePath $f.FullName
 

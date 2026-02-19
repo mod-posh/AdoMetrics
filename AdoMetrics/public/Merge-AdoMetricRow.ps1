@@ -1,5 +1,6 @@
-function Merge-AdoMetricRow {
-<#
+function Merge-AdoMetricRow
+{
+    <#
 .SYNOPSIS
 Merges two sets of metric rows, deduping by definitionId + adoBuildId.
 
@@ -20,13 +21,15 @@ Merged rows, newest-first.
 
     $index = @{}
 
-    foreach ($e in @($Existing)) {
+    foreach ($e in @($Existing))
+    {
         $e = Repair-AdoMetricRowSchema -Row $e
         $k = "{0}:{1}" -f $e.definitionId, $e.adoBuildId
         $index[$k] = $e
     }
 
-    foreach ($n in @($New)) {
+    foreach ($n in @($New))
+    {
         $n = Repair-AdoMetricRowSchema -Row $n
         $k = "{0}:{1}" -f $n.definitionId, $n.adoBuildId
         $index[$k] = $n

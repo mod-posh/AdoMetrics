@@ -1,5 +1,6 @@
-function New-AdoMetricsReadme {
-<#
+function New-AdoMetricsReadme
+{
+    <#
 .SYNOPSIS
 Generates README markdown for Azure DevOps build metrics.
 
@@ -30,11 +31,14 @@ System.String (markdown)
     $rows = @($Rows)
 
     # StrictMode-safe access for required-ish fields
-    $org    = if ($ProjectProfile.PSObject.Properties.Match('organization').Count -gt 0) { [string]$ProjectProfile.organization } else { "" }
-    $proj   = if ($ProjectProfile.PSObject.Properties.Match('project').Count      -gt 0) { [string]$ProjectProfile.project }      else { "" }
-    $defIds = if ($ProjectProfile.PSObject.Properties.Match('definitionIds').Count -gt 0 -and $null -ne $ProjectProfile.definitionIds) {
+    $org = if ($ProjectProfile.PSObject.Properties.Match('organization').Count -gt 0) { [string]$ProjectProfile.organization } else { "" }
+    $proj = if ($ProjectProfile.PSObject.Properties.Match('project').Count -gt 0) { [string]$ProjectProfile.project }      else { "" }
+    $defIds = if ($ProjectProfile.PSObject.Properties.Match('definitionIds').Count -gt 0 -and $null -ne $ProjectProfile.definitionIds)
+    {
         @($ProjectProfile.definitionIds)
-    } else {
+    }
+    else
+    {
         @()
     }
 
@@ -47,21 +51,24 @@ System.String (markdown)
     if ($ProjectProfile.PSObject.Properties.Match('titles').Count -gt 0 -and
         $null -ne $ProjectProfile.titles -and
         $ProjectProfile.titles.PSObject.Properties.Match('readme').Count -gt 0 -and
-        -not [string]::IsNullOrWhiteSpace([string]$ProjectProfile.titles.readme)) {
+        -not [string]::IsNullOrWhiteSpace([string]$ProjectProfile.titles.readme))
+    {
 
         $title = [string]$ProjectProfile.titles.readme
     }
     # Legacy shape: ProjectProfile.readmeTitle
     elseif ($ProjectProfile.PSObject.Properties.Match('readmeTitle').Count -gt 0 -and
-        -not [string]::IsNullOrWhiteSpace([string]$ProjectProfile.readmeTitle)) {
+        -not [string]::IsNullOrWhiteSpace([string]$ProjectProfile.readmeTitle))
+    {
 
         $title = [string]$ProjectProfile.readmeTitle
     }
 
     $null = $sb.AppendLine("# $title")
-    if (-not [string]::IsNullOrWhiteSpace($org))  { $null = $sb.AppendLine("- Organization: $org") }
+    if (-not [string]::IsNullOrWhiteSpace($org)) { $null = $sb.AppendLine("- Organization: $org") }
     if (-not [string]::IsNullOrWhiteSpace($proj)) { $null = $sb.AppendLine("- Project: $proj") }
-    if ($defIds.Count -gt 0) {
+    if ($defIds.Count -gt 0)
+    {
         $null = $sb.AppendLine("- DefinitionIds: $($defIds -join ', ')")
     }
     $null = $sb.AppendLine()
@@ -75,7 +82,8 @@ System.String (markdown)
     $null = $sb.AppendLine("| Pipeline | Runs | Completed | Succeeded | Failed | Canceled | Avg Duration (min) |")
     $null = $sb.AppendLine("|---|---:|---:|---:|---:|---:|---:|")
 
-    foreach ($g in $byPipe) {
+    foreach ($g in $byPipe)
+    {
         $pipeRows = @($g.Group)
         $runs = $pipeRows.Count
         $completed = @($pipeRows | Where-Object { $_.status -eq "completed" }).Count
@@ -84,15 +92,18 @@ System.String (markdown)
         $canceled = @($pipeRows | Where-Object { $_.result -eq "canceled" -or $_.result -eq "cancelling" }).Count
 
         $durSecs = @(
-            foreach ($r in $pipeRows) {
-                if ($null -ne $r.PSObject.Properties["durationSeconds"] -and $null -ne $r.durationSeconds) {
+            foreach ($r in $pipeRows)
+            {
+                if ($null -ne $r.PSObject.Properties["durationSeconds"] -and $null -ne $r.durationSeconds)
+                {
                     [double]$r.durationSeconds
                 }
             }
         )
 
         $avgMin = ""
-        if ($durSecs.Count -gt 0) {
+        if ($durSecs.Count -gt 0)
+        {
             $avgSec = ($durSecs | Measure-Object -Average).Average
             $avgMin = Convert-ToRoundedMinutes -Seconds ([double]$avgSec)
         }

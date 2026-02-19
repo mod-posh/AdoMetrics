@@ -1,5 +1,6 @@
-function Get-AdoPat {
-<#
+function Get-AdoPat
+{
+    <#
 .SYNOPSIS
 Retrieves the Azure DevOps PAT from Azure Key Vault using REST (no Az PowerShell / no azcli).
 
@@ -72,7 +73,8 @@ Permissions:
         [Parameter()][string]$KeyVaultApiVersion = "7.4"
     )
 
-    try {
+    try
+    {
         # Key Vault uses the resource scope "https://vault.azure.net/.default"
         $token = Get-AadAccessToken `
             -TenantId $TenantId `
@@ -86,10 +88,13 @@ Permissions:
             -AccessToken $token `
             -ApiVersion $KeyVaultApiVersion
     }
-    catch {
-        if ($AllowEnvFallback) {
+    catch
+    {
+        if ($AllowEnvFallback)
+        {
             $fallback = [Environment]::GetEnvironmentVariable($EnvVarName)
-            if (-not [string]::IsNullOrWhiteSpace($fallback)) {
+            if (-not [string]::IsNullOrWhiteSpace($fallback))
+            {
                 return $fallback
             }
         }

@@ -1,10 +1,12 @@
-function Test-IsBase64 {
+function Test-IsBase64
+{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Value
     )
 
-    try {
+    try
+    {
         if ($Value.Length -lt 4) { return $false }
         if ($Value.Length % 4 -ne 0) { return $false }
 
@@ -12,7 +14,8 @@ function Test-IsBase64 {
         [Convert]::FromBase64String($Value) | Out-Null
         return $true
     }
-    catch {
+    catch
+    {
         return $false
     }
 }

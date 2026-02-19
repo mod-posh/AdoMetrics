@@ -1,5 +1,6 @@
-function Import-AdoMetricsJsonl {
-<#
+function Import-AdoMetricsJsonl
+{
+    <#
 .SYNOPSIS
 Reads metric rows from a JSONL file.
 

@@ -1,5 +1,6 @@
-function Resolve-AdoMetricsConfig {
-<#
+function Resolve-AdoMetricsConfig
+{
+    <#
 .SYNOPSIS
 Resolves the standard ado-metrics configuration paths.
 

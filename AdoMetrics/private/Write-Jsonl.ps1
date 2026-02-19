@@ -1,4 +1,5 @@
-function Write-Jsonl {
+function Write-Jsonl
+{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Path,
@@ -6,12 +7,14 @@ function Write-Jsonl {
     )
 
     $dir = Split-Path -Parent $Path
-    if ($dir -and -not (Test-Path $dir)) {
+    if ($dir -and -not (Test-Path $dir))
+    {
         New-Item -ItemType Directory -Force -Path $dir | Out-Null
     }
 
     $sb = New-Object System.Text.StringBuilder
-    foreach ($i in @($Items)) {
+    foreach ($i in @($Items))
+    {
         $null = $sb.AppendLine(($i | ConvertTo-Json -Depth 20 -Compress))
     }
 

@@ -1,4 +1,5 @@
-function Get-AadAccessToken {
+function Get-AadAccessToken
+{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$TenantId,
@@ -16,14 +17,17 @@ function Get-AadAccessToken {
         scope         = $Scope
     }
 
-    try {
+    try
+    {
         $resp = Invoke-RestMethod -Method Post -Uri $tokenUri -Body $body -ContentType "application/x-www-form-urlencoded"
     }
-    catch {
+    catch
+    {
         throw "Failed to acquire AAD token: $($_.Exception.Message)"
     }
 
-    if (-not $resp.access_token) {
+    if (-not $resp.access_token)
+    {
         throw "Failed to acquire AAD token: response did not contain access_token."
     }
 

@@ -1,5 +1,6 @@
-function Update-AdoMetricsReadme {
-<#
+function Update-AdoMetricsReadme
+{
+    <#
 .SYNOPSIS
 Regenerates metrics/README.md from the cumulative JSONL store and profile configuration.
 
@@ -36,7 +37,7 @@ Update-AdoMetricsReadme -ConfigRoot "./ado-metrics" -OutDir "metrics"
 
     $cfg = Resolve-AdoMetricsConfig -ConfigRoot $ConfigRoot
     $project = Get-AdoProjectProfile -Path $cfg.ProjectProfilePath
-    $metrics  = Get-AdoMetricsProfile -Path $cfg.MetricsProfilePath
+    $metrics = Get-AdoMetricsProfile -Path $cfg.MetricsProfilePath
 
     $allJsonlPath = Join-Path $OutDir $AllJsonlRelativePath
     $rows = @(Read-Jsonl -Path $allJsonlPath)

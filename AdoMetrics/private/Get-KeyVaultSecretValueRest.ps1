@@ -1,4 +1,5 @@
-function Get-KeyVaultSecretValueRest {
+function Get-KeyVaultSecretValueRest
+{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$KeyVaultName,
@@ -16,15 +17,18 @@ function Get-KeyVaultSecretValueRest {
         Accept        = "application/json"
     }
 
-    try {
+    try
+    {
         $resp = Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
     }
-    catch {
+    catch
+    {
         # Surface Key Vault REST failure cleanly
         throw "Failed to read Key Vault secret '$SecretName' from '$KeyVaultName': $($_.Exception.Message)"
     }
 
-    if (-not $resp.value) {
+    if (-not $resp.value)
+    {
         throw "Key Vault secret '$SecretName' returned empty 'value'."
     }
 

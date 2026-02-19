@@ -1,4 +1,5 @@
-function Get-AdoBuildsPaged {
+function Get-AdoBuildsPaged
+{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][hashtable]$Headers,
@@ -11,7 +12,7 @@ function Get-AdoBuildsPaged {
 
         # API behavior
         [Parameter()][int]$Top = 200,
-        [Parameter()][ValidateSet('finishTimeDescending','finishTimeAscending','queueTimeDescending','queueTimeAscending','startTimeDescending','startTimeAscending')]
+        [Parameter()][ValidateSet('finishTimeDescending', 'finishTimeAscending', 'queueTimeDescending', 'queueTimeAscending', 'startTimeDescending', 'startTimeAscending')]
         [string]$QueryOrder = 'finishTimeDescending',
 
         [Parameter()][string]$ApiVersion = '7.1'
@@ -22,7 +23,8 @@ function Get-AdoBuildsPaged {
     $all = New-Object System.Collections.Generic.List[object]
     $continuationToken = $null
 
-    while ($true) {
+    while ($true)
+    {
 
         $qs = @(
             "api-version=$ApiVersion"
@@ -31,12 +33,14 @@ function Get-AdoBuildsPaged {
             "queryOrder=$QueryOrder"
         )
 
-        if ($PSBoundParameters.ContainsKey('MinTimeUtc')) {
+        if ($PSBoundParameters.ContainsKey('MinTimeUtc'))
+        {
             $minIso = $MinTimeUtc.ToUniversalTime().ToString('o')
             $qs += "minTime=$([Uri]::EscapeDataString($minIso))"
         }
 
-        if ($continuationToken) {
+        if ($continuationToken)
+        {
             $qs += "continuationToken=$([Uri]::EscapeDataString($continuationToken))"
         }
 
@@ -45,13 +49,15 @@ function Get-AdoBuildsPaged {
         $resp = Invoke-WebRequest -Method Get -Uri $url -Headers $Headers -ErrorAction Stop
         $json = $resp.Content | ConvertFrom-Json
 
-        if ($json -and $json.value) {
+        if ($json -and $json.value)
+        {
             foreach ($b in $json.value) { $all.Add($b) }
         }
 
         # Continuation token header name can vary in casing
         $ct = $null
-        foreach ($name in @("x-ms-continuationtoken", "X-MS-ContinuationToken", "x-ms-continuationToken")) {
+        foreach ($name in @("x-ms-continuationtoken", "X-MS-ContinuationToken", "x-ms-continuationToken"))
+        {
             if ($resp.Headers[$name]) { $ct = $resp.Headers[$name]; break }
         }
 
@@ -59,5 +65,5 @@ function Get-AdoBuildsPaged {
         $continuationToken = $ct
     }
 
-    return ,$all.ToArray()
+    return , $all.ToArray()
 }

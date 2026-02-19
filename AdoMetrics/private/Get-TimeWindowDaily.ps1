@@ -1,4 +1,5 @@
-function Get-TimeWindowDaily {
+function Get-TimeWindowDaily
+{
     [CmdletBinding()]
     param(
         [Parameter()][int]$HoursBack = 24

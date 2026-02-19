@@ -1,4 +1,5 @@
-function Write-AdoMetricsSections {
+function Write-AdoMetricsSections
+{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][System.Text.StringBuilder]$Builder,
@@ -9,24 +10,30 @@ function Write-AdoMetricsSections {
     )
 
     $sections = $MetricsProfile.reports.$ReportKind.sections
-    if (-not $sections -or $sections.Count -lt 1) {
+    if (-not $sections -or $sections.Count -lt 1)
+    {
         throw "Metrics profile has no sections for report '$ReportKind'."
     }
 
-    foreach ($s in $sections) {
-        switch ([string]$s.type) {
+    foreach ($s in $sections)
+    {
+        switch ([string]$s.type)
+        {
 
-            'overallTotals' {
+            'overallTotals'
+            {
                 Write-MetricBlock-OverallTotals -Builder $Builder -Rows $Rows
                 continue
             }
 
-            'totalsPerPipeline' {
+            'totalsPerPipeline'
+            {
                 Write-MetricBlock-TotalsPerPipeline -Builder $Builder -Rows $Rows -IncludeTotalPipelines:$true
                 continue
             }
 
-            'indexWeekly' {
+            'indexWeekly'
+            {
                 # Placeholder for now (we’ll wire it once weekly reports exist)
                 $null = $Builder.AppendLine("## Weekly Metrics")
                 $null = $Builder.AppendLine()
@@ -35,7 +42,8 @@ function Write-AdoMetricsSections {
                 continue
             }
 
-            default {
+            default
+            {
                 # Don’t silently ignore: it’s config-driven; missing handler should be visible.
                 throw "Unsupported metrics section type '$($s.type)' for report '$ReportKind'."
             }

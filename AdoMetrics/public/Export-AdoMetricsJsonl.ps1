@@ -1,5 +1,6 @@
-function Export-AdoMetricsJsonl {
-<#
+function Export-AdoMetricsJsonl
+{
+    <#
 .SYNOPSIS
 Writes metric rows to a JSONL file.
 

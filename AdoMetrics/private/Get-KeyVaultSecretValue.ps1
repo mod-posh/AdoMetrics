@@ -1,4 +1,5 @@
-function Get-KeyVaultSecretValue {
+function Get-KeyVaultSecretValue
+{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$KeyVaultName,
@@ -7,38 +8,47 @@ function Get-KeyVaultSecretValue {
 
     # Note: This assumes the caller already authenticated to Azure (e.g., via azure/login in GitHub Actions
     # and optionally Set-AzContext). We keep this function small and deterministic.
-    try {
+    try
+    {
         # Prefer -AsPlainText when available (Az.KeyVault supports it in modern versions).
         $value = $null
 
-        try {
+        try
+        {
             $value = Get-AzKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName -AsPlainText
         }
-        catch {
+        catch
+        {
             # Fallback for older Az.KeyVault versions: SecretValue is a SecureString
             $secret = Get-AzKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName
-            if ($null -eq $secret -or $null -eq $secret.SecretValue) {
+            if ($null -eq $secret -or $null -eq $secret.SecretValue)
+            {
                 throw
             }
 
             $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secret.SecretValue)
-            try {
+            try
+            {
                 $value = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
             }
-            finally {
-                if ($bstr -ne [IntPtr]::Zero) {
+            finally
+            {
+                if ($bstr -ne [IntPtr]::Zero)
+                {
                     [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
                 }
             }
         }
 
-        if ([string]::IsNullOrWhiteSpace($value)) {
+        if ([string]::IsNullOrWhiteSpace($value))
+        {
             throw "Key Vault secret '$SecretName' returned empty."
         }
 
         return $value
     }
-    catch {
+    catch
+    {
         throw "Failed to read secret '$SecretName' from Key Vault '$KeyVaultName': $($_.Exception.Message)"
     }
 }

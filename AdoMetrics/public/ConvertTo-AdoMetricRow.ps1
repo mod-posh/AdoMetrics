@@ -1,4 +1,5 @@
-function ConvertTo-AdoMetricRow {
+function ConvertTo-AdoMetricRow
+{
     <#
 .SYNOPSIS
 Converts a raw Azure DevOps build run object into a canonical metrics row.
@@ -89,13 +90,15 @@ https://learn.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=a
     $defId = [int]$Build.definition.id
 
     $pipelineLabel = "DEF-$defId"
-    $pipelineName  = $null
+    $pipelineName = $null
 
-    if ($Build.definition -and $Build.definition.name) {
+    if ($Build.definition -and $Build.definition.name)
+    {
         $pipelineName = [string]$Build.definition.name
     }
 
-    if ($DefinitionProfiles.ContainsKey($defId)) {
+    if ($DefinitionProfiles.ContainsKey($defId))
+    {
         $pipelineLabel = [string]$DefinitionProfiles[$defId].pipelineLabel
     }
 
@@ -107,7 +110,8 @@ https://learn.microsoft.com/en-us/rest/api/azure/devops/build/builds/list?view=a
     foreach ($k in $meta.Values.Keys) { $derived[$k] = $meta.Values[$k] }
 
     $requestedForDisplay = $null
-    if ($Build.requestedFor -and $Build.requestedFor.displayName) {
+    if ($Build.requestedFor -and $Build.requestedFor.displayName)
+    {
         $requestedForDisplay = [string]$Build.requestedFor.displayName
     }
 
