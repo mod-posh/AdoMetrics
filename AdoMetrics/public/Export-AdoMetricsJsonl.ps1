@@ -66,6 +66,7 @@ function Export-AdoMetricsJsonl
   - V1 export boundaries repair rows by default to enforce schema guarantees.
   - This function does not perform deduplication; Merge-AdoMetricRow is responsible
     for merge semantics.
+  - Repairs schemaVersion if missing; throws if schemaVersion > 1
 
   JSONL format:
   - One compressed JSON object per line

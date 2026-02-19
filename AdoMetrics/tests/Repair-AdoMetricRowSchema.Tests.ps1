@@ -30,5 +30,21 @@ Describe "Repair-AdoMetricRowSchema" {
       $fixed.derived.Keys.Count | Should -Be 0
     }
 
+    It "defaults schemaVersion to 1 when missing" {
+      $row = [pscustomobject]@{ definitionId = 1; adoBuildId = 2 }
+      $fixed = Repair-AdoMetricRowSchema -Row $row
+      $fixed.schemaVersion | Should -Be 1
+    }
+
+    It "accepts schemaVersion 1 (including coercible string)" {
+      $row = [pscustomobject]@{ schemaVersion = '1'; definitionId = 1; adoBuildId = 2 }
+      $fixed = Repair-AdoMetricRowSchema -Row $row
+      $fixed.schemaVersion | Should -Be 1
+    }
+
+    It "throws if schemaVersion is greater than 1" {
+      $row = [pscustomobject]@{ schemaVersion = 2; definitionId = 1; adoBuildId = 2 }
+      { Repair-AdoMetricRowSchema -Row $row | Out-Null } | Should -Throw
+    }
   }
 }

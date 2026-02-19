@@ -61,6 +61,7 @@ function Import-AdoMetricsJsonl
   - The JSONL store is treated as the authoritative dataset, but V1 read boundaries
     repair rows to re-establish canonical guarantees.
   - Canonical schema guarantees are handled by Repair-AdoMetricRowSchema.
+  - Warns once if schemaVersion missing; defaults to 1; throws if schemaVersion > 1
 
   JSONL expectations:
   - One valid JSON object per line.
@@ -94,6 +95,22 @@ function Import-AdoMetricsJsonl
 
   if ($Repair)
   {
+
+    $missingSchema = $false
+    foreach ($r in $items)
+    {
+      if ($null -eq $r.PSObject.Properties['schemaVersion'])
+      {
+        $missingSchema = $true
+        break
+      }
+    }
+
+    if ($missingSchema)
+    {
+      Write-Warning "Import-AdoMetricsJsonl: One or more rows are missing 'schemaVersion'. Defaulting to schemaVersion=1."
+    }
+
     $items = @(
       foreach ($r in $items)
       {
