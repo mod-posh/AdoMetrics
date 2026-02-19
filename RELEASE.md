@@ -108,12 +108,6 @@ Add `/scripts/quickstart-v1.ps1` that demonstrates:
 
 * issue-15: Add private `Assert-AdoMetricRow` for boundary validation
 
-## CREATE, ADR-001
-
-* issue-17: Add auth regression tests for raw vs encoded PAT
-* issue-10: Create Pester tests
-* issue-9: Create scripts\quickstart-v1.ps1
-
 ## MODIFY, ADR-001
 
 * issue-8: Modify public\New-AdoMetricsReadme.ps1
@@ -123,4 +117,10 @@ Add `/scripts/quickstart-v1.ps1` that demonstrates:
 * issue-4: Modify public\Import-AdoMetricsJsonl.ps1
 * issue-3: Modify private\Repair-AdoMetricRowSchema.ps1
 * issue-2: Modify public\ConvertTo-AdoMetricRow.ps1
+
+## CREATE, ADR-001
+
+* issue-17: Add auth regression tests for raw vs encoded PAT
+* issue-10: Create Pester tests
+* issue-9: Create scripts\quickstart-v1.ps1
 
