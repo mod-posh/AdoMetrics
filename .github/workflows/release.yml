@@ -16,7 +16,7 @@ jobs:
         id: get_version
         uses: mod-posh/GetProjectVersion@main
         with:
-          Filename: 'ModPosh.AdoMetrics'
+          Filename: 'ModPosh.AdoMetrics.psd1'
           verbose: "verbose"
 
       - name: Create Release Notes
@@ -83,7 +83,7 @@ jobs:
 
           # Create external help file
           New-ExternalHelp -Path 'docs/api' -OutputPath './publish/ModPosh.AdoMetrics' -Force
-          
+
           Write-Host 'PlatyPS documentation generated successfully'
           "
 
