@@ -33,7 +33,7 @@ jobs:
       - name: Create Release
         uses: mod-posh/NewTaggedRelease@v0.0.3.2
         with:
-          name: 'Release v${{ steps.get_version.outputs.version }}'
+          name: 'Release v{{ env.VERSION }}'
           filename: 'RELEASE.md'
           version: ${{ env.VERSION }}
           verbose: 'verbose'
