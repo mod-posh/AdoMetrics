@@ -75,8 +75,8 @@ jobs:
       - name: Generate Documentation with PlatyPS
         run: |
           pwsh -Command "
-          # Import the created module
-          Import-Module './publish/ModPosh.AdoMetrics' -Force
+          # Import the created module from output folder
+          Import-Module './output/ModPosh.AdoMetrics' -Force
 
           # Generate markdown help using PlatyPS
           Import-Module PlatyPS
@@ -84,10 +84,7 @@ jobs:
           Update-MarkdownHelp -Path 'docs/api' -AlphabeticParamsOrder -UseFullTypeName
 
           # Create external help file
-          New-ExternalHelp -Path 'docs/api' -OutputPath './publish/ModPosh.AdoMetrics' -Force
-
-          Write-Host 'PlatyPS documentation generated successfully'
-          "
+          New-ExternalHelp -Path 'docs/api' -OutputPath './output/ModPosh.AdoMetrics' -Force
 
       - name: Run markdownlint-cli2-action
         uses: DavidAnson/markdownlint-cli2-action@v22
